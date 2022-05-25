@@ -11,7 +11,7 @@ run = True
 
 def Single_Point2Point():
     # Set goals to go to
-    GOALS = [(1,1,2),(1,-1,4),(-1,-1,2),(-1,1,4)]
+    GOALS = [(1,1,1),(1,-1,4),(-1,-1,2),(-1,1,4)]
     YAWS = [0,3.14,-1.54,1.54]
     # Define the quadcopters
     QUADCOPTER={'q1':{'position':[1,0,4],'orientation':[0,0,0],'L':0.3,'r':0.1,'prop_size':[10,4.5],'weight':1.2}}
