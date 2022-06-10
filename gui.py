@@ -6,13 +6,15 @@ import sys
 
 class GUI():
     # 'quad_list' is a dictionary of format: quad_list = {'quad_1_name':{'position':quad_1_position,'orientation':quad_1_orientation,'arm_span':quad_1_arm_span}, ...}
-    def __init__(self, quads):
+    def __init__(self, quads, boat):
+        self.boat = boat
+
         self.quads = quads
         self.fig = plt.figure()
         self.ax = Axes3D.Axes3D(self.fig)
-        self.ax.set_xlim3d([-2.0, 2.0])
+        self.ax.set_xlim3d([-50.0, 50.0])
         self.ax.set_xlabel('X')
-        self.ax.set_ylim3d([-2.0, 2.0])
+        self.ax.set_ylim3d([-50.0, 50.0])
         self.ax.set_ylabel('Y')
         self.ax.set_zlim3d([0, 5.0])
         self.ax.set_zlabel('Z')
@@ -39,6 +41,12 @@ class GUI():
             self.quads[key]['l2'], = self.ax.plot([],[],[],color='red',linewidth=3,antialiased=False)
             self.quads[key]['hub'], = self.ax.plot([],[],[],marker='o',color='green', markersize=6,antialiased=False)
 
+    def draw_boat(self):
+        M = np.array([[self.boat.boat['position'][0], self.boat.boat['position'][0], self.boat.boat['position'][0]+self.boat.boat['L'], self.boat.boat['position'][0]+self.boat.boat['L'], self.boat.boat['position'][0]],
+                [self.boat.boat['position'][1], self.boat.boat['position'][1] + self.boat.boat['L'], self.boat.boat['position'][1] + self.boat.boat['L'], self.boat.boat['position'][1], self.boat.boat['position'][1]],
+                np.ones(5)])
+        self.ax.plot(M[0].flatten(),M[1].flatten(),'r')
+
     def update(self):
         for key in self.quads:
             R = self.rotation_matrix(self.quads[key]['orientation'])
@@ -54,6 +62,8 @@ class GUI():
             self.quads[key]['l2'].set_3d_properties(points[2,2:4])
             self.quads[key]['hub'].set_data(points[0,5],points[1,5])
             self.quads[key]['hub'].set_3d_properties(points[2,5])
+        self.draw_boat()
+        
         plt.pause(0.000000000000001)
 
     def keypress_routine(self,event):

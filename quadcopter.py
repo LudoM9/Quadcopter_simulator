@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import math
 import scipy.integrate
 import time
@@ -120,6 +121,70 @@ class Quadcopter():
 
     def set_orientation(self,quad_name,orientation):
         self.quads[quad_name]['state'][6:9] = orientation
+
+    def get_time(self):
+        return self.time
+
+    def thread_run(self,dt,time_scaling):
+        rate = time_scaling*dt
+        last_update = self.time
+        while(self.run==True):
+            time.sleep(0)
+            self.time = datetime.datetime.now()
+            if (self.time-last_update).total_seconds() > rate:
+                self.update(dt)
+                last_update = self.time
+
+    def start_thread(self,dt=0.002,time_scaling=1):
+        self.thread_object = threading.Thread(target=self.thread_run,args=(dt,time_scaling))
+        self.thread_object.start()
+
+    def stop_thread(self):
+        self.run = False
+
+class Boat():
+    def __init__(self,boat):
+        self.boat = boat               # BOAT = {'position':np.array([1,1,0]),'L':0.05}    #1.028 m/s
+        self.thread_object = None
+        self.time = datetime.datetime.now()
+        self.boat['state'] = np.zeros(6)
+        self.boat['state'][0:3] = self.boat['position']
+        self.u = np.array([0.2,0.2]).reshape(2,1)
+        self.run = True
+
+    def update(self, dt):
+        self.u[0] += (1 if random.random() < 0.5 else -1)*0.05
+        self.u[1] += (1 if random.random() < 0.5 else -1)*0.05
+
+        beta = 0.5 #Coefficient (en rad) a regler selon l'angle max des roues de la direction avant.
+
+        delta = beta*self.u[1]
+        xdot = np.array([self.u[0]*np.cos(delta)*np.cos(self.boat['state'][2]),
+                      self.u[0]*np.cos(delta)*np.sin(self.boat['state'][2]),
+                      self.u[0]*np.sin(delta)/self.boat['L']]).reshape((3,1))
+        self.boat['state'][3:6] = np.array([max(-1.028, min(xdot[0], 1.028)), max(-1.028, min(xdot[1], 1.028)), max(-1.028, min(xdot[2], 1.028))])[0]
+        self.boat['state'][0:3] = self.boat['state'][0:3] + self.boat['state'][3:6]*dt
+
+    def get_position(self):
+        return self.boat['state'][0:3]
+
+    def get_linear_rate(self):
+        return self.boat['state'][3:6]
+
+    def get_orientation(self):
+        return self.boat['state'][6:9]
+
+    def get_angular_rate(self):
+        return self.boat['state'][9:12]
+
+    def get_state(self):
+        return self.boat['state']
+
+    def set_position(self,position):
+        self.boat['state'][0:3] = position
+
+    def set_orientation(self,orientation):
+        self.boat['state'][6:9] = orientation
 
     def get_time(self):
         return self.time
