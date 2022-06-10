@@ -27,7 +27,7 @@ def Single_Point2Point():
                         'Angular_PID':{'P':[22000,22000,1500],'I':[0,0,1.2],'D':[12000,12000,0]},
                         }
 
-    BOAT = {'position': np.array([8,4,0]),'L':0.2}    #1.028 m/s
+    BOAT = {'position': np.array([-10,-10,0]),'L':0.2}    #1.028 m/s
     boat = quadcopter.Boat(BOAT)
     boat.start_thread(dt=QUAD_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
 
@@ -46,7 +46,7 @@ def Single_Point2Point():
         y = 3.14
         ctrl.update_target(goal)
         ctrl.update_yaw_target(y)
-        for i in range(20):
+        for i in range(10):
             gui_object.quads['q1']['position'] = quad.get_position('q1')
             gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
             gui_object.boat.boat['position'] = boat.get_position()

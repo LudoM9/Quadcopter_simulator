@@ -12,9 +12,9 @@ class GUI():
         self.quads = quads
         self.fig = plt.figure()
         self.ax = Axes3D.Axes3D(self.fig)
-        self.ax.set_xlim3d([-10.0, 10.0])
+        self.ax.set_xlim3d([-20.0, 10.0])
         self.ax.set_xlabel('X')
-        self.ax.set_ylim3d([-10.0, 10.0])
+        self.ax.set_ylim3d([-20.0, 10.0])
         self.ax.set_ylabel('Y')
         self.ax.set_zlim3d([0, 5.0])
         self.ax.set_zlabel('Z')

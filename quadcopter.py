@@ -149,21 +149,18 @@ class Boat():
         self.time = datetime.datetime.now()
         self.boat['state'] = np.zeros(6)
         self.boat['state'][0:3] = self.boat['position']
-        self.u = np.array([0.2,-0.4]).reshape(2,1)
+        self.u = np.array([-1,-0.5]).reshape(2,1)
         self.run = True
 
     def update(self, dt):
-        self.u[0] += (1 if random.random() < 0.5 else -1)*0.1
-        self.u[1] += (1 if random.random() < 0.5 else -1)*0.1
+        self.u[0] += (1 if random.random() < 0.5 else -1)*0.05
+        self.u[1] += (1 if random.random() < 0.5 else -1)*0.05
 
-        beta = 0.5 #Coefficient (en rad) a regler selon l'angle max des roues de la direction avant.
+        self.u[0] = max(-1.5, min(1.5, self.u[0]))
+        self.u[1] = max(-1.5, min(1.5, self.u[1]))
 
-        delta = beta*self.u[1]
-        xdot = np.array([self.u[0], self.u[1], self.u[0]*np.sin(delta)/self.boat['L'] ])
-        """xdot = np.array([self.u[0]*np.cos(delta)*np.cos(self.boat['state'][2]),
-                      self.u[0]*np.cos(delta)*np.sin(self.boat['state'][2]),
-                      self.u[0]*np.sin(delta)/self.boat['L']]).reshape((3,1))"""
-        self.boat['state'][3:6] = np.array([max(-1.028, min(xdot[0], 1.028)), max(-1.028, min(xdot[1], 1.028)), max(-1.028, min(xdot[2], 1.028))])[0]
+        xdot = np.array([(self.u[0]+self.u[1])*np.cos(self.boat['state'][2]), (self.u[0]+self.u[1])*np.sin(self.boat['state'][2]), self.u[1]-self.u[0]])
+        self.boat['state'][3:6] = np.array([xdot[0][0],xdot[1][0],xdot[2][0]])
         self.boat['state'][0:3] = self.boat['state'][0:3] + self.boat['state'][3:6]*dt
 
     def get_position(self):
