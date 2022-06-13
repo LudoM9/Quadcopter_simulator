@@ -18,7 +18,7 @@ class GUI():
         self.ax.set_ylabel('Y')
         self.ax.set_zlim3d([0, 5.0])
         self.ax.set_zlabel('Z')
-        self.ax.set_title('Quadcopter Simulation')
+        self.ax.set_title('Simulation Drone Aérien')
         self.init_plot()
         self.fig.canvas.mpl_connect('key_press_event', self.keypress_routine)
 
